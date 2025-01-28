@@ -1,3 +1,6 @@
+NOTE: to run this project install redis locally in your system.
+Proper redis server will be added soon.
+
 ![alt text](image.png)
 
 Here's a **Redis Cheatsheet** with commonly used commands, grouped by category for easy reference:
