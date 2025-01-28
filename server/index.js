@@ -2,12 +2,24 @@ import express from "express";
 import cors from "cors";
 import { createClient } from "redis";
 import { encodeBase62 } from "./services/base_62_encoding_service.js";
+import { nanoid } from "nanoid";
 
 const app = express();
 
 // Use CORS middleware to handle Cross-Origin requests
 app.use(cors());
 app.use(express.json());
+
+// Enable CORS
+app.use(cors({ origin: "*" }));
+
+// Handle preflight requests for OPTIONS method
+app.options("*", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.status(204).end();
+});
 
 // Initialise Redis client with the given URL
 const redisClient = createClient({
@@ -38,14 +50,18 @@ app.post("/shorten", async (req, res) => {
   } else {
     try {
       // Increment the global counter in Redis
-      const id = await redisClient.incr("global_counter");
-      console.log(id);
+      // const id = await redisClient.incr("global_counter");
+      // console.log(id);
       // Encode the counter value to a Base62 string
-      const shortUrlId = encodeBase62(id);
+      // const shortUrlId = encodeBase62(id);
+      // console.log(shortUrlId);
+
+      const shortUrlId = nanoid(5); // Generates an 8-character ID by default
       console.log(shortUrlId);
 
       // Store the short URL ID and the original URL in the Redis hash
       await redisClient.hSet("urls", shortUrlId, originalURL);
+      console.log(`Stored in Redis: ${shortUrlId} -> ${originalURL}`);
 
       // Return the shortened URL in the response
       res.json({
@@ -54,7 +70,7 @@ app.post("/shorten", async (req, res) => {
       });
     } catch (error) {
       console.log(error);
-      // Return an error response in case of any issues
+
       res.json({
         status: false,
         error: error,
@@ -69,23 +85,27 @@ app.get("/:shortUrlId", async (req, res) => {
 
   try {
     // Retrieve the original URL from the Redis hash
+    console.log(`Fetching from Redis: Key -> urls, Field -> ${shortUrlId}`);
     const originalUrl = await redisClient.hGet("urls", shortUrlId);
-    // res.redirect(originalUrl);
-    // console.log(originalUrl);
+    console.log(`Fetched: ${originalUrl}`);
+
+    console.log(originalUrl);
 
     if (!originalUrl) {
       // If the URL is not found, return a 404 response
+      console.log("not found");
       res.status(404).json({
         status: false,
         error: "Short URL not found",
       });
     } else {
-      // Redirect the user to the original URL (302 Temporary Redirect by default)
-      res.redirect(originalUrl);
+      
+      // Redirect to the original URL
+      res.redirect(302, originalUrl);
     }
   } catch (error) {
     console.error(error);
-    // Return a 500 response for server errors
+
     res.status(500).json({
       status: false,
       error: "An error occurred while processing your request",

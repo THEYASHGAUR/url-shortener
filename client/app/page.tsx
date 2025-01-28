@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+
 export default function Home() {
   const [longURL, setLongUrl] = useState("");
   const [shortURL, setShortUrl] = useState("");
@@ -41,9 +42,11 @@ export default function Home() {
     try {
       const response = await fetch(`http://localhost:3001/${shortURL}`);
       const data = await response.json();
+      console.log(data);
       if (response.ok) {
         // If the response is OK, set the retrieved long URL
         setRetrievedLongUrl(data.data);
+        console.log(data.data);
       } else {
         
         setError("not found");
