@@ -3,12 +3,15 @@
 import { useState } from "react";
 
 
+
 export default function Home() {
   const [longURL, setLongUrl] = useState("");
   const [shortURL, setShortUrl] = useState("");
   const [generatedShortUrl, setGeneratedShortUrl] = useState("");
   const [retreivedLongUrl, setRetrievedLongUrl] = useState("");
   const [error, setError] = useState<any>("");
+
+  
 
   // Function to handle the generation of a short URL
   const handleGenerateShortUrl = async () => {
@@ -61,7 +64,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col items-center justify-center p-4">
       <h1 className="text-3xl font-bold mb-8 font-serif">
-        Welcome to MicroUrl SaaS👋
+        Welcome to URL Shortener App
       </h1>
 
       {/* Generate a new Short URL */}

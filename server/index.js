@@ -21,6 +21,12 @@ app.options("*", (req, res) => {
   res.status(204).end();
 });
 
+// Allow requests from your Next.js frontend
+app.use(cors({
+  origin: 'http://localhost:3000', // Your Next.js frontend URL
+  credentials: true // If you're sending cookies or authentication headers
+}));
+
 // Initialise Redis client with the given URL
 const redisClient = createClient({
   url: "redis://localhost:6379",
